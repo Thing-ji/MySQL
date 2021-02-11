@@ -1,0 +1,68 @@
+<데이터베이스 서버접속>
+cmd -> cd C:\Bitnami\wampstack2-8.0.1-0\mysql\bin (mysql로 이동)
+dir (파일 목록 확인하기)
+mysql -uroot -p (mysql 서버 접속)
+
+<데이터베이스 스키마의 사용>
+1. 데이터 스키마 만들기(데이터베이스: 여러 표들이 모여져있는 집합)
+CREATE DATABASE (스키마이름);
+{DROP DATABASE (스키마이름);}
+
+2. SHOW DATABASES; (데이터베이스 목록보기)
+3. USE opentutorials; (opentutorials 데이터베이스 사용하기)
+
+<MySQL 테이블 생성>
+1. CREATE TABLE topic(
+  -> id INT(( )노출시키고 싶은 크기) NOT NULL (NULL값 허용X) AUTO_INCREMENT(중복하지 않게 하기위해 자동으로 값을 1 더해줌), 
+
+
+
+<MySQL의 CRUD>
+Create
+Read
+Update
+Delete
+
+<SQL의 INSERT 구문>
+SHOW TABLES; (테이블 목록 보기)
+DESC topic; (테이블 보기)
+
+*삽입
+INSERT INTO (테이블 이름) (컬럼) VALUES(넣을 값)
+
+*id는 어차피 AUTO_INCREMENT를 해서 자동적으로 1이 채워지기에 안써줘도됨
+ex) INSERT INTO (title, description, created, author, profile) VALUES('MySQL', 'My SQL is ...', NOW(), 'egoing', 'developer')
+Tip) NOW() : 지금 시간을 나타내는 함수
+
+
+추가된 행 보기
+SELECT * FROM topic;
+
+
+
+<SQL의 SELECT 구문>
+SELECT (원하는 컬럼) FROM (테이블명);
+ex) SELECT id, title, created, author FROM topic;
+
+SELECT "egoing", 1+1;
+: "egoing"과 1+1이라는 컬럼 생성
+
+SELECT id, title, created, author FROM topic WHERE author = 'egoing';
+: 컬럼(id, title, created, author)을 가져오고 author에서 'egoing'인 것만 뽑아냄
+
+SELECT id, title, created, author FROM topic WHERE author = 'egoing' ORDER BY id DESC;
+: 컬럼(id, title, created, author)을 가져오고 author에서 'egoing'인 것만 뽑아내고, id값이 큰 것부터 출력함
+
+SELECT id, title, created, author FROM topic WHERE author = 'egoing' ORDER BY id DESC LIMIT 2;
+: 컬럼(id, title, created, author)을 가져오고 author에서 'egoing'인 것만 뽑아내고, id값이 큰 것부터 위에서 2개까지만 출력함
+
+
+
+<SQL의 UPDATE 구문>
+UPDATE topic SET description='Oracle is ...', title='Oracle' WHERE id=2;
+: id가 2인 행에서 description은 'Oracle is ...'으로, title은 'Oracle'으로 값을 update한다.
+
+<SQL의 DELETE 구문>
+DELETE FROM topic WHERE id = 5;
+:id가 5인 행을 삭제한다.
+**WHERE문을 꼭 써주어야한다. 자칫 데이터 모두가 날라갈 수도 있다.
