@@ -1,0 +1,400 @@
+<이수안컴퓨터연구소>
+
+SHOW DATABASES; -> 데이터 베이스 들어감
+USE world; -> world라는 데이터베이스 사용
+SHOW TABLE;
+SHOW TABLE STATUS; -> 각 테이블의 상태보여줌
+DESCRIBE city; -> city라는 테이블의 상태를 보여줌
+DESC city
+DESC country
+DESC countrylanguage
+
+---------------------------------------
+
+SELECT * FROM city; -> city라는 테이블에 전체 데이터를 보여줘라
+
+SELECT Name, Population
+FROM city
+-> city라는 테이블에서 Name, Population 컬럼을 보여줘라
+
+SELECT *
+FROM city
+WHERE Population > 8000000; -> Population에서 8000000을 넘는 숫자만 모든컬럼에서 출력하라
+
+SELECT *
+FROM city
+WHERE Population < 8000000 ; 
+AND Population > 7000000; -> 8000000과 7000000사이만 출력시킴
+
+SELECT*
+FROM city
+WEHRE CountryCode = 'USA'; -> 한국인 사람만 모두 출력
+
+SELECT*
+FROM city
+WHRER CountryCode = 'KOR'
+AND Population >= 1000000; -> 한국인 이면서 Population만 출력
+
+SELECT*
+FROM city
+WHRER Population BETWEEN 7000000 AND 8000000;
+(BETWEEN은 사이의 값을 표현하고 싶을 때 사용)
+
+SELECT*
+FROM city
+WHRER Name IN('Seoul', 'New York', 'Tokyo');
+(IN는 포함되어 있는 것)
+-> Name 컬럼에서 'Seoul', 'New York', 'Tokyo' 인 데이터만 출력
+
+SELECT*
+FROM city
+WHRER CountryCode IN('KOR', 'USA', 'JPN')
+
+SELECT*
+FROM city
+WHRER CountryCode LIKE 'KO_'
+(LIKE는 _의 모든 "하나의" 문자열이 와도 상관없으니 시작이 KO인 것 찾기)
+
+SELECT*
+FROM city
+WHRER Name LIKE 'Tel %'
+(LIKE는 %의 모든 "무한수의 길이" 문자열이 와도 상관없으니 시작이 Tel인 것 찾기)
+
+
+SELECT CountryCode
+FROM city
+WHERE Name = 'Seoul'
+-> 'KOR'출력
+
+SELECT *
+FROM city
+WHERE CountryCode = ( SELECT CountryCode
+                                  FROM city
+                                  WHERE Name = 'Seoul' );
+-> Name에서 "Seoul"인 데이터를 CountryCode만 출력 시키고 그 CountryCode 값의 조건에 맞게 모든 컬럼의 데이터를 출력
+
+SELECT *
+FROM city
+WHERE Population > ANY ( SELECT Population
+                                     FROM city
+                                     WHERE District = 'New York');
+-> District 컬럼에서 "New York"에 대한 Population을 출력한 후 ANY(어떤 한가지만 만족해도 출력)을 시킴.
+-> 즉 여기서는 나온 Population에서 제일 작은 값보다 큰 것을 출력시킴
+
+SELECT *
+FROM city
+WHERE Population > ALL ( SELECT Population
+                                     FROM city
+                                     WHERE District = 'New York');
+-> District 컬럼에서 "New York"에 대한 Population을 출력한 후 ALL(모두 만족해야 출력)을 시킴.
+-> 즉 여기서는 나온 Population에서 제일 큰 값보다 큰 것을 출력시킴
+
+SELECT *
+FROM city
+ORDER BY Population DESC;
+(ORDER 어떤 순서를 나열할 때)
+-> Population을 DESC(내림차순) 으로 정렬한다., ASC는 오름차순
+
+SELECT *
+FROM city
+ORDER BY CountryCode ASC, Population DESC
+
+SELECT *
+FROM city
+WHERE CountryCode = 'KOR'
+ORDER BY Population DESC
+-> 한국이면서 인구수가 제일 높은거
+
+SELECT *
+FROM country
+ORDER BY SurfaceArea DESC;
+
+SELECT DISTINCT CountryCode
+FROM city;
+(DISTINCT는 중복된 것은 1개씩만 보여주면서 출력)
+
+
+SELECT *
+FROM city
+ORDER BY Population DESC
+LIMIT 10
+(LIMIT은 제한하기)
+-> 상위 10개만 뽑음
+
+SELECT CountryCode, AVG(Population)
+FROM city
+GROUP BY CountryCode
+-> CountryCode로 묶은 후 Population의 평균을 보여달라
+
+SELECT CountryCode, AVG(Population) AS 'Average'
+FROM city
+GROUP BY CountryCode
+
+SELECT COUNT(*)
+FROM city
+-> 도시의 개수
+
+SELECT AVG(Population)
+FROM city
+-> 도시들의 평균 인구수
+
+
+SELECT CountryCode, MAX(Population)
+FROM city
+GROUP BY CountryCode
+HAVING MAX(Population) > 8000000
+*HAVING은 GROUP BY랑 꼭 같이옴
+
+
+SELECT CountryCode, Name, SUM(Population)
+FROM city
+GROUP BY CountryCode, Name WITH ROLLUP
+ROLLUP은 총합 또는 중간합계가 필요할 경우 사용
+
+SELECT *
+FROM city
+JOIN country ON city.CountryCode = country.Code
+* JOIN 할 땐 조건이 필요하다!
+
+SELECT *
+FROM city
+JOIN country ON city.CountryCode = country.Code
+JOIN countrylanguage ON city.CountryCode = countrylanguage.CountryCode
+-> 3개의 테이블을 join
+
+---------------------------------------------------------------------------
+Mysql 내장함수
+
+LENGTH() : 전달받은 문자열의 길이를 반환
+SELECT LENGTH('asdfasdf');
+
+CONCAT() : 전달받은 문자열을 모두 결합하여 하나의 문자열로 반환
+SELECT CONCAT('My', 'sql Op', 'en Source');
+
+LOCATE() : 문자열 내에서 찾는 문자열이 처음으로 나타나는 위치를 찾아서 해당 위치를 반환, 인덱스는 1부터
+SELECT LOCATE('abc', 'abababababcabacbac');
+
+
+LEFT(), RIGHT() : 문자열을 왼쪽, 오른쪽으로 지정한 숫자만큼 뽑음
+SELECT
+LEFT('MySQL is an open source relational database management system', 5),
+RIGHT('MySQL is an open source relational database management system', 6);
+
+
+LOWER(), UPPER() : 대문자를 소문자로, 소문자를 대문자로
+SELECT
+LOWER('MySQL is an open source relational database management system', 5),
+UPPER('MySQL is an open source relational database management system', 6);
+
+
+REPLACE() : 문자열에서 특정 문자열을 대체 문자열로 교체
+SELECT REPLACE('MSSQL', 'MS', 'My');
+-> 'MSSQL'에서 'MS'를 'My'로 교체
+
+
+TRIM() : 함수에서 사용할 수 있는 지정자 (문자를 자를 때 사용)
+- BOTH : 양 끝에 존재하는 특정문자 제거
+- LEADING : 문자열 앞에 존재하는 문자 제거
+- TRAILING : 문자열 뒤에 존재하는 문자 제거
+SELECT TRIM('                  MySQL                '),
+TRIM(LEADING '#' FROM '###MySQL##'),
+TRIM(TRAILING '#' FROM '###MySQL##');
+
+
+FORMAT() : 숫자 타입의 데이터를 세 자리마다 쉼표(,)를 사용하는 '#,###,###.##'형식으로 변환
+SELECT FORMAT(123123123123.123123123, 3);
+SELECT FORMAT(123123123123.123123123, 6);
+
+
+FLORR() : 내림
+CEIL() : 올림
+ROUND() : 반올림
+SELECT FLOOR(10.95), CEIL(10.95), ROUND(10.95)
+
+
+SELECT SQRT(4), POW(2, 3), EXP(3), LOG(3)
+
+
+SIN(), COS(), TAN() : 싸인, 코싸인, 탄젠트
+SELECT SIN(PI() / 2), COS(PI()), TAN(PI() / 4)
+
+
+ABS() : 절대값 반환
+RAND() : 0.0 보다 크거나 같고 1.0보다 작은 하나의 실수 무작위 생성
+SELECT ABS(-3), RAND(), ROUND(RAND() * 100, 0);
+
+
+NOW() : 현재 날짜와 시간을 반환
+CURDATE() : 현재 날짜를 반환
+CURTIME() : 현재 시각을 반환
+SELECT NOW(), CURDATE(), CURTIME();
+
+SELECT
+NOW(),
+DATE(NOW()),
+MONTH(NOW()),
+DAY(NOW()),
+HOUR(NOW()),
+MINUTE(NOW()),
+SECOND(NOW())
+
+MONTHNAME() : 월에 해당하는 이름을 반환
+DAYNAME() : 요일에 해당하는 이름을 반환
+
+DAYOFWEEK() : 일자가 해당 주에서 몇 번째 날인지
+DAYOFMONTH() : 일자가 해당 월에서 몇 번째 날인지
+DAYOFYEAR() : 일자가 해당 연도에서 몇 번째 날인지
+SELECT
+NOW()
+DAYOFMONTH(NOW()),
+DAYOFWEEK(NOW()),
+DAYOFYEAR(NOW())
+
+DATE_FORMAT() : 전달받은 형식에 맞춰 날짜와 시간 정보를 문자열로 반환
+SELECT
+DATE_FORMAT(NOW(), '%D %y %a %d %m %n %j')
+
+------------------------------------------------------------------------
+SQL 고급
+
+CRATE TABLE city2 AS SELECT * FROM city;
+-> city 테이블을 그대로 city2의 이름의 테이블로 형성함
+SELECT * FROM city2;
+
+
+CREATE DATABASE david;
+USE david;
+-> 데이터 베이스 생성
+
+
+CREATE TABLE test2(
+   id INT NOT NULL PRIMARY KEY,
+   col1 INT NULL,
+   col2 FLOAT NULL,
+   col3 VARCHAR(45) NULL
+)
+SELECT * FROM test2;
+
+
+ALTER TABLE test2
+ADD col4 INT NULL;
+-> test2 라는 테이블에서 col4 컬럼을 추가(ADD)해줘 (ALTER)
+SELECT * FROM test2;
+
+DESC test2;
+
+ALTER TABLE test2
+MODIFY col4 VARCHAR(2O) NULL;
+-> col4를 수정하고 싶다. (MODIFY)
+
+DESC test2;
+
+ALTER TABLE test2
+DROP col4;
+-> col4를 제거하고 싶다. (DROP)
+
+DESC test2;
+
+----ALTER과 같이 사용됨
+
+
+CREATE INDEX Col1Idx
+ON test (col1);
+-> test라는 테이블에 col1 컬럼에서 Col1Idx를 가진 인덱스를 생성해주어라
+
+SHOW INDEX FROM test;
+
+
+CREATE UNIQUE INDEX Col2Idx
+ON test (col2);
+-> (UNIQUE) 중복 허용X 을 사용하여 인덱스를 만들어줌 (Non_Unique 확인하기)
+SHOW INDEX FROM test;
+
+
+ALTER TABLE test
+ADD FULLTEXT Col3IDX(col3);
+-> 컬럼의 문자열을 전부 다 빠르게 탐색할 때 사용
+SHOW INDEX FROM test;
+
+
+ALTER TABLE test
+DROP INDEX Col3Idx;
+-> Col3Idx 인덱스를 (ALTER TABLE을 사용하여) 삭제
+
+DROP INDEX Col2Idx ON test;
+-> 위와 같은 의미
+
+
+VIEW : 데이터베이스에 존재하는 일종의 가상 테이블
+
+CREAT VIEW testView AS
+SELECT Col1, Col2
+FROM test;
+-> test 테이블에서 Col1, Col2란 컬럼을 가진 VIEW 테이블을 testView이름으로 만듬
+SELECT * FROM testView;
+
+
+<수정>
+ALTER VIEW testView AS
+SELECT Col1, Col2, Col3
+FROM test;
+
+SELECT * FROM testView;
+
+DROP VIEW testView; -> 삭제
+
+
+
+city, country, countrylanguage 테이블을 JOIN하고, 한국에 대한 정보만 뷰 생성하기
+
+CREATE VIEW allView AS
+SELSECT city.Name, country.SurfaceArea, city.Population, countrylanguage.Language
+FROM city
+JOIN country ON city.CountryCode = country.Code
+JOIN countrylanguage ON city.CountryCode = countrylanguage.CountryCode
+WHERE city.CountryCode = 'KOR';
+
+SELECT * FROM allView;
+
+
+INSERT INTO test
+VALUE(1, 123, 1.1, "Test");
+
+SELECT * FROM test;
+
+
+INSERT INTO test2 SELECT * FROM test;
+-> test2에 test의 내용을 전부 다 복사한다.
+SELECT * FROM test2;
+
+
+UPDATE : 기존에 입력되어 있는 값 변경하는 구문(WHERE 꼭 써주기!!!)
+UPDATE test
+SET col1 = 1, col2 = 1.0, col3 = 'test'
+WHERE id=1;
+
+SELECT * FROM test;
+
+
+DELETE FROM test
+WHERE id = 1;
+-> id값이 1로 되어있는 것 지움
+SELECT * FROM test;
+(다만, DELETE는 데이터 베이스 용량이 변하지 않음. 그냥 휴지통에 넣었다고 생각하면 됨.)
+
+
+TRUNCATE TABLE FROM test;
+
+SELECT * FROM test;
+(TRUNCATE는 껍떼기 빼고 다 바로 삭제해버림)
+
+
+DROP TABLE test
+SELECT * FROM test;
+-> 테이블 자체를 삭제
+
+
+DROP DATABASE david
+참고자료: https://www.youtube.com/watch?v=vgIc4ctNFbc
+
+
